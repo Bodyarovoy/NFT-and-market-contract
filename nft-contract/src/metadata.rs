@@ -5,15 +5,15 @@ pub type TokenId = String;
 #[serde(crate = "near_sdk::serde")]
 pub struct Payout {
     pub payout: HashMap<AccountId, U128>,
-} 
+}
 
 #[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, Clone)]
 #[serde(crate = "near_sdk::serde")]
 pub struct NFTContractMetadata {
-    pub spec: String,              // required, "nft-2.0.0"
-    pub name: String,              // required
-    pub symbol: String,            // required
-    pub icon: Option<String>,      // URL
+    pub spec: String,                        // required, "nft-2.0.0"
+    pub name: String,                        // required
+    pub symbol: String,                      // required
+    pub icon: Option<String>,                // URL
     pub base_uri: Option<String>, // Centralized gateway known to have reliable access to decentralized storage assets referenced by `reference` or `media` URLs
     pub reference: Option<String>, // URL to a JSON file with more info
     pub reference_hash: Option<Base64VecU8>, // Base64-encoded sha256 hash of JSON from reference field. Required if `reference` is included.
@@ -22,8 +22,8 @@ pub struct NFTContractMetadata {
 #[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize)]
 #[serde(crate = "near_sdk::serde")]
 pub struct TokenMetadata {
-    pub title: Option<String>, 
-    pub description: Option<String>, 
+    pub title: Option<String>,
+    pub description: Option<String>,
     pub media: Option<String>, // preferably to decentralized, content-addressed storage
     pub media_hash: Option<Base64VecU8>, // Base64-encoded sha256 hash of content referenced by the `media` field. Required if `media` is included.
     pub copies: Option<u64>, // number of copies of this set of metadata in existence when token was minted.
@@ -38,27 +38,31 @@ pub struct TokenMetadata {
 
 #[derive(BorshDeserialize, BorshSerialize)]
 pub struct Token {
-
+    pub series_id: u64,
     pub owner_id: AccountId,
     pub approved_account_ids: HashMap<AccountId, u64>,
     pub next_approval_id: u64,
-    pub royalty: HashMap<AccountId, u32>,
 }
 
-//The Json token is what will be returned from view calls. 
+//The Json token is what will be returned from view calls.
 #[derive(Serialize, Deserialize)]
 #[serde(crate = "near_sdk::serde")]
 pub struct JsonToken {
-
+    // Series that the token belongs to
+    pub series_id: u64,
+    //token ID
     pub token_id: TokenId,
+    //owner of the token
     pub owner_id: AccountId,
+    //token metadata
     pub metadata: TokenMetadata,
+    //list of approved account IDs that have access to transfer the token. This maps an account ID to an approval ID
     pub approved_account_ids: HashMap<AccountId, u64>,
-    pub royalty: HashMap<AccountId, u32>,
+    //keep track of the royalty percentages for the token in a hash map
+    pub royalty: Option<HashMap<AccountId, u32>>,
 }
 
 pub trait NonFungibleTokenMetadata {
-
     fn nft_metadata(&self) -> NFTContractMetadata;
 }
 

@@ -1,5 +1,5 @@
 use crate::*;
-use near_sdk::{CryptoHash};
+use near_sdk::CryptoHash;
 use std::mem::size_of;
 
 //convert the royalty percentage and amount to pay into a payout (U128)
@@ -12,16 +12,18 @@ pub(crate) fn bytes_for_approved_account_id(account_id: &AccountId) -> u64 {
     account_id.as_str().len() as u64 + 4 + size_of::<u64>() as u64
 }
 
-//refund the storage taken up by passed in approved account IDs and send the funds to the passed in account ID. 
+//refund the storage taken up by passed in approved account IDs and send the funds to the passed in account ID.
 pub(crate) fn refund_approved_account_ids_iter<'a, I>(
     account_id: AccountId,
-    approved_account_ids: I, 
+    approved_account_ids: I,
 ) -> Promise
 where
     I: Iterator<Item = &'a AccountId>,
 {
     //get the storage total by going through and summing all the bytes for each approved account IDs
-    let storage_released: u64 = approved_account_ids.map(bytes_for_approved_account_id).sum();
+    let storage_released: u64 = approved_account_ids
+        .map(bytes_for_approved_account_id)
+        .sum();
     //transfer the account the storage that is released
     Promise::new(account_id).transfer(Balance::from(storage_released) * env::storage_byte_cost())
 }
@@ -35,7 +37,7 @@ pub(crate) fn refund_approved_account_ids(
 }
 
 //used to generate a unique prefix in our storage collections (this is to avoid data collisions)
-pub(crate) fn hash_account_id(account_id: &AccountId) -> CryptoHash {
+pub(crate) fn hash_account_id(account_id: &String) -> CryptoHash {
     let mut hash = CryptoHash::default();
     hash.copy_from_slice(&env::sha256(account_id.as_bytes()));
     hash
@@ -56,6 +58,30 @@ pub(crate) fn assert_at_least_one_yocto() {
         env::attached_deposit() >= 1,
         "Requires attached deposit of at least 1 yoctoNEAR",
     )
+}
+
+pub(crate) fn payout_series_owner(
+    storage_used: u64,
+    price_per_token: Balance,
+    owner_id: AccountId,
+) {
+    //get how much it would cost to store the information
+    let required_cost = env::storage_byte_cost() * Balance::from(storage_used);
+    //get the attached deposit
+    let attached_deposit = env::attached_deposit();
+
+    //make sure that the attached deposit is greater than or equal to the required cost
+    assert!(
+        attached_deposit >= required_cost + price_per_token,
+        "Must attach {} yoctoNEAR to cover storage and price per token {}",
+        required_cost,
+        price_per_token
+    );
+
+    // If there's a price for the token, transfer everything but the storage to the series owner
+    if price_per_token > 0 {
+        Promise::new(owner_id).transfer(attached_deposit - required_cost);
+    }
 }
 
 //refund the initial deposit based on the amount of storage that was used up
@@ -89,7 +115,7 @@ impl Contract {
             UnorderedSet::new(
                 StorageKey::TokenPerOwnerInner {
                     //we get a new unique prefix for the collection
-                    account_id_hash: hash_account_id(&account_id),
+                    account_id_hash: hash_account_id(&account_id.to_string()),
                 }
                 .try_to_vec()
                 .unwrap(),
@@ -133,25 +159,25 @@ impl Contract {
         //get the token object by passing in the token_id
         let token = self.tokens_by_id.get(token_id).expect("No token");
 
-		if sender_id != &token.owner_id {
-			//if the token's approved account IDs doesn't contain the sender, we panic
-			if !token.approved_account_ids.contains_key(sender_id) {
-				env::panic_str("Unauthorized");
-			}
+        if sender_id != &token.owner_id {
+            //if the token's approved account IDs doesn't contain the sender, we panic
+            if !token.approved_account_ids.contains_key(sender_id) {
+                env::panic_str("Unauthorized");
+            }
 
-			if let Some(enforced_approval_id) = approval_id {
-				let actual_approval_id = token
-					.approved_account_ids
-					.get(sender_id)
-					.expect("Sender must be approved");
+            if let Some(enforced_approval_id) = approval_id {
+                let actual_approval_id = token
+                    .approved_account_ids
+                    .get(sender_id)
+                    .expect("Sender must be approved");
 
                 assert_eq!(
-					actual_approval_id, &enforced_approval_id,
-					"The actual approval_id {} is different from the given approval_id {}",
-					actual_approval_id, enforced_approval_id,
-				);
-			}
-		}
+                    actual_approval_id, &enforced_approval_id,
+                    "The actual approval_id {} is different from the given approval_id {}",
+                    actual_approval_id, enforced_approval_id,
+                );
+            }
+        }
 
         assert_ne!(
             &token.owner_id, receiver_id,
@@ -162,15 +188,15 @@ impl Contract {
         self.internal_add_token_to_owner(receiver_id, token_id);
 
         let new_token = Token {
+            series_id: token.series_id,
             owner_id: receiver_id.clone(),
             approved_account_ids: Default::default(),
             next_approval_id: token.next_approval_id,
-            royalty: token.royalty.clone(),
         };
         self.tokens_by_id.insert(token_id, &new_token);
 
         if let Some(memo) = memo.as_ref() {
-            env::log_str(&format!("Memo: {}", memo).to_string());
+            env::log_str(&format!("Memo: {}", memo));
         }
 
         let mut authorized_id = None;
@@ -193,7 +219,7 @@ impl Contract {
         };
 
         env::log_str(&nft_transfer_log.to_string());
-        
+
         token
     }
-} 
+}

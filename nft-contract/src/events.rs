@@ -131,4 +131,4 @@ mod tests {
         };
         assert_eq!(expected, log.to_string());
     }
-} 
+}

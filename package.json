@@ -1,10 +1,11 @@
 {
     "name": "market_and_nft_contract",
     "version": "1.0.0",
-    "description": "Market and NFT contract for NLC",
+    "description": "Market and NFT contract for LNC",
     "author": "Bogdan Iarovoi",
     "license": "ISC",
     "scripts": {
-        "build": "cd nft-contract && bash build.sh && cd .. && ls && cd market-contract && bash build.sh && cd .."
+        "build": "cd nft-contract && bash build.sh && cd .. && ls && cd market-contract && bash build.sh && cd .. && ls && cd lottery && bash build.sh && cd ..",
+        "lottery": "cd lottery && bash lottery.sh"
     }
 }

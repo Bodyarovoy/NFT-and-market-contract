@@ -15,7 +15,8 @@ pub use crate::metadata::*;
 pub use crate::nft_core::*;
 pub use crate::royalty::*;
 pub use crate::series::*;
-
+pub use crate::owner::*;
+ 
 mod approval;
 mod enumeration;
 mod events;
@@ -24,6 +25,7 @@ mod metadata;
 mod nft_core;
 mod royalty;
 mod series;
+mod owner;
 
 /// This spec can be treated like a version of the standard.
 pub const NFT_METADATA_SPEC: &str = "2.0.0";

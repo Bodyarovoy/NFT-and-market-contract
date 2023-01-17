@@ -103,6 +103,16 @@ pub(crate) fn refund_deposit(storage_used: u64) {
 }
 
 impl Contract {
+
+    /// Ensure that the caller is the owner of the contract
+    pub(crate) fn assert_contract_owner(&mut self) {
+        assert!(
+            self.owner_id == env::predecessor_account_id(),
+            "only contract owner"
+        )
+    }
+
+    
     //add a token to the set of tokens an owner has
     pub(crate) fn internal_add_token_to_owner(
         &mut self,

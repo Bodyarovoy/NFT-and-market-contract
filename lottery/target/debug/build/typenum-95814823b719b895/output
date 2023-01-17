@@ -1,0 +1,3 @@
+cargo:rerun-if-changed=build/main.rs
+cargo:rustc-env=TYPENUM_BUILD_CONSTS=c:\dev\near\My nft contract\lottery\target\debug\build\typenum-95814823b719b895\out\consts.rs
+cargo:rustc-env=TYPENUM_BUILD_OP=c:\dev\near\My nft contract\lottery\target\debug\build\typenum-95814823b719b895\out\op.rs

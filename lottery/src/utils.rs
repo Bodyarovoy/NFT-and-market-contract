@@ -5,7 +5,7 @@ uint::construct_uint!(
     pub struct U256(4);
 );
 
-pub const NEAR:&str = "near";
+pub const NEAR: &str = "near";
 
 // pub(crate) fn match_token_id(account_id: &AccountId) -> String {
 //     let binding = account_id.to_string();
@@ -43,10 +43,10 @@ pub(crate) fn ratio(balance: u128, r: u32) -> u128 {
     u128_ratio(balance, u128::from(r), u128::from(MAX_RATIO))
 }
 
-pub (crate) fn get_range_random_number(range_start: u32, range_end: u32) -> usize {
+pub(crate) fn get_range_random_number(range_start: u32, range_end: u32) -> usize {
     let random_seed = env::random_seed_array();
-    let mut rng:StdRng = SeedableRng::from_seed(random_seed);
-    rng.gen_range(range_start..range_end) as _
+    let mut rng: StdRng = SeedableRng::from_seed(random_seed);
+    rng.gen_range(range_start, range_end) as _
 }
 
 // pub (crate) fn shuffle(mut list: Vec<AccountId>) -> Vec<AccountId> {

@@ -1,0 +1,11 @@
+/mnt/c/dev/near/My nft contract/lottery/target/wasm32-unknown-unknown/release/deps/getrandom-4838194dd8257e64.rmeta: /home/bodyarovoy/.cargo/registry/src/github.com-1ecc6299db9ec823/getrandom-0.1.16/src/lib.rs /home/bodyarovoy/.cargo/registry/src/github.com-1ecc6299db9ec823/getrandom-0.1.16/src/error.rs /home/bodyarovoy/.cargo/registry/src/github.com-1ecc6299db9ec823/getrandom-0.1.16/src/util.rs /home/bodyarovoy/.cargo/registry/src/github.com-1ecc6299db9ec823/getrandom-0.1.16/src/error_impls.rs /home/bodyarovoy/.cargo/registry/src/github.com-1ecc6299db9ec823/getrandom-0.1.16/src/dummy.rs
+
+/mnt/c/dev/near/My nft contract/lottery/target/wasm32-unknown-unknown/release/deps/libgetrandom-4838194dd8257e64.rlib: /home/bodyarovoy/.cargo/registry/src/github.com-1ecc6299db9ec823/getrandom-0.1.16/src/lib.rs /home/bodyarovoy/.cargo/registry/src/github.com-1ecc6299db9ec823/getrandom-0.1.16/src/error.rs /home/bodyarovoy/.cargo/registry/src/github.com-1ecc6299db9ec823/getrandom-0.1.16/src/util.rs /home/bodyarovoy/.cargo/registry/src/github.com-1ecc6299db9ec823/getrandom-0.1.16/src/error_impls.rs /home/bodyarovoy/.cargo/registry/src/github.com-1ecc6299db9ec823/getrandom-0.1.16/src/dummy.rs
+
+/mnt/c/dev/near/My nft contract/lottery/target/wasm32-unknown-unknown/release/deps/getrandom-4838194dd8257e64.d: /home/bodyarovoy/.cargo/registry/src/github.com-1ecc6299db9ec823/getrandom-0.1.16/src/lib.rs /home/bodyarovoy/.cargo/registry/src/github.com-1ecc6299db9ec823/getrandom-0.1.16/src/error.rs /home/bodyarovoy/.cargo/registry/src/github.com-1ecc6299db9ec823/getrandom-0.1.16/src/util.rs /home/bodyarovoy/.cargo/registry/src/github.com-1ecc6299db9ec823/getrandom-0.1.16/src/error_impls.rs /home/bodyarovoy/.cargo/registry/src/github.com-1ecc6299db9ec823/getrandom-0.1.16/src/dummy.rs
+
+/home/bodyarovoy/.cargo/registry/src/github.com-1ecc6299db9ec823/getrandom-0.1.16/src/lib.rs:
+/home/bodyarovoy/.cargo/registry/src/github.com-1ecc6299db9ec823/getrandom-0.1.16/src/error.rs:
+/home/bodyarovoy/.cargo/registry/src/github.com-1ecc6299db9ec823/getrandom-0.1.16/src/util.rs:
+/home/bodyarovoy/.cargo/registry/src/github.com-1ecc6299db9ec823/getrandom-0.1.16/src/error_impls.rs:
+/home/bodyarovoy/.cargo/registry/src/github.com-1ecc6299db9ec823/getrandom-0.1.16/src/dummy.rs:

@@ -8,7 +8,7 @@ pub struct ContractParams {
     pub fees_collected: Vec<(AccountId, U128)>,
     pub config: ConfigView,
     pub cashback_accounts_num: Vec<(AccountId, u32)>,
-    pub whitelisted_tokens: Vec<AccountId>
+    pub whitelisted_tokens: Vec<AccountId>,
 }
 
 // #[derive(Serialize, Debug)]
@@ -29,7 +29,7 @@ pub struct ConfigView {
     /// lotteries config
     pub entry_fees_required: Vec<(AccountId, Vec<U128>)>,
     pub num_participants_required: Vec<(LotteryType, Vec<u32>)>,
-    pub accepted_subs: String
+    pub accepted_subs: String,
 }
 
 #[derive(Serialize, Debug)]
@@ -45,7 +45,7 @@ pub struct LotteryView {
     pub current_pool: U128,
     /// Required total amount for lottery to start
     pub required_pool: U128,
-//     pub big_lottery_params: Option<BigLotteryParams>
+    //     pub big_lottery_params: Option<BigLotteryParams>
 }
 
 #[derive(Serialize, Debug)]
@@ -63,7 +63,7 @@ pub struct SimpleLotteryResult {
     pub participants: Vec<AccountId>,
     pub winner: AccountId,
     pub winning_amount: U128,
-    pub contract_fee: U128
+    pub contract_fee: U128,
 }
 
 // #[derive(Serialize, Debug)]
@@ -85,40 +85,45 @@ impl Contract {
         let config = ConfigView {
             owner_id: config_internal.owner_id,
             contract_fee_ratio: config_internal.contract_fee_ratio,
-            entry_fees_required: lottery_config_internal
-                .entry_fees
-                .into_iter()
-                .collect(),
+            entry_fees_required: lottery_config_internal.entry_fees.into_iter().collect(),
             num_participants_required: vec![
-                (LotteryType::SimpleLottery, lottery_config_internal.num_participants),
+                (
+                    LotteryType::SimpleLottery,
+                    lottery_config_internal.num_participants,
+                ),
                 // (LotteryType::BigLottery, lottery_config_internal.big_lottery_num_participants),
             ],
-            accepted_subs: config_internal.accepted_subs
+            accepted_subs: config_internal.accepted_subs,
         };
 
-        ContractParams { 
-            fees_collected: self.fees.to_vec().iter().map(|(acc, fee)| (acc.clone(), U128(*fee))).collect::<Vec<_>>(), 
+        ContractParams {
+            fees_collected: self
+                .fees
+                .to_vec()
+                .iter()
+                .map(|(acc, fee)| (acc.clone(), U128(*fee)))
+                .collect::<Vec<_>>(),
             config,
             cashback_accounts_num: self
                 .cashback_accounts
                 .iter()
                 .map(|(token_id, stored_cashback)| {
                     (token_id, stored_cashback.accounts.len() as u32)
-                }) 
+                })
                 .collect(),
-            whitelisted_tokens: self.whitelisted_tokens.to_vec()
+            whitelisted_tokens: self.whitelisted_tokens.to_vec(),
         }
     }
     pub fn get_lottery_view(&self, lottery: Lottery) -> LotteryView {
         match lottery {
             // Lottery::Lottery(lottery) => {
-            //     LotteryView { 
+            //     LotteryView {
             //         lottery_token_id: lottery.lottery_token_id,
-            //         lottery_status: lottery.lottery_status, 
-            //         entries: lottery.entries, 
-            //         entry_fee: lottery.entry_fee.into(), 
-            //         current_pool: lottery.current_pool.into(), 
-            //         required_pool: lottery.required_pool.into(), 
+            //         lottery_status: lottery.lottery_status,
+            //         entries: lottery.entries,
+            //         entry_fee: lottery.entry_fee.into(),
+            //         current_pool: lottery.current_pool.into(),
+            //         required_pool: lottery.required_pool.into(),
             //         big_lottery_params: Some(BigLotteryParams {
             //             cashbacked_num: lottery.cashbacked_num,
             //             ten_percent_winners_num: lottery.ten_percent_winners_num,
@@ -127,13 +132,13 @@ impl Contract {
             //     }
             // },
             Lottery::SimpleLottery(lottery) => {
-                LotteryView { 
+                LotteryView {
                     lottery_token_id: lottery.lottery_token_id,
-                    lottery_status: lottery.lottery_status, 
-                    entries: lottery.entries, 
-                    entry_fee: lottery.entry_fee.into(), 
-                    current_pool: lottery.current_pool.into(), 
-                    required_pool: lottery.required_pool.into(), 
+                    lottery_status: lottery.lottery_status,
+                    entries: lottery.entries,
+                    entry_fee: lottery.entry_fee.into(),
+                    current_pool: lottery.current_pool.into(),
+                    required_pool: lottery.required_pool.into(),
                     // big_lottery_params: None
                 }
             }

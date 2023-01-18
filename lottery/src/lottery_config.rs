@@ -2,7 +2,9 @@ use std::collections::HashMap;
 
 use crate::*;
 
-#[derive(BorshSerialize, BorshDeserialize, Serialize, Deserialize, PartialEq, Copy, Clone, Debug)]
+#[derive(
+    BorshSerialize, BorshDeserialize, Serialize, Deserialize, PartialEq, Copy, Clone, Debug,
+)]
 #[serde(crate = "near_sdk::serde")]
 pub enum LotteryType {
     SimpleLottery,
@@ -12,8 +14,8 @@ pub enum LotteryType {
 #[derive(BorshSerialize, BorshDeserialize, Serialize)]
 #[serde(crate = "near_sdk::serde")]
 pub struct StoredCashback {
-    pub amount: Balance, 
-    pub accounts: Vec<AccountId>
+    pub amount: Balance,
+    pub accounts: Vec<AccountId>,
 }
 
 impl From<String> for LotteryType {
@@ -60,8 +62,15 @@ impl LotteryConfig {
     }
 
     pub fn remove_num_participants(&mut self, num: u32) {
-        assert!(!self.num_participants.is_empty(), "Cannot remove last lottery num_participants");
-        let index = self.num_participants.iter().position(|x| x == &num).expect("invalid num to remove");
+        assert!(
+            !self.num_participants.is_empty(),
+            "Cannot remove last lottery num_participants"
+        );
+        let index = self
+            .num_participants
+            .iter()
+            .position(|x| x == &num)
+            .expect("invalid num to remove");
         self.num_participants.remove(index);
     }
 
@@ -77,17 +86,9 @@ impl LotteryConfig {
 
     pub fn add_entry_fee(&mut self, token_id: Option<AccountId>, fee: U128) {
         if let Some(token_id) = token_id {
-            self
-                .entry_fees
-                .entry(token_id)
-                .or_default()
-                .push(fee)
+            self.entry_fees.entry(token_id).or_default().push(fee)
         } else {
-            self
-                .entry_fees
-                .entry(near())
-                .or_default()
-                .push(fee)
+            self.entry_fees.entry(near()).or_default().push(fee)
         }
     }
 
@@ -98,7 +99,8 @@ impl LotteryConfig {
                 .entry(token_id.clone())
                 .or_default()
                 .iter()
-                .position(|x| x == &fee).expect("invalid fee to remove");
+                .position(|x| x == &fee)
+                .expect("invalid fee to remove");
             (position, token_id)
         } else {
             let position = self
@@ -106,30 +108,23 @@ impl LotteryConfig {
                 .entry(near())
                 .or_default()
                 .iter()
-                .position(|x| x == &fee).expect("invalid fee to remove");
+                .position(|x| x == &fee)
+                .expect("invalid fee to remove");
             (position, near())
         };
-        
-        self
-            .entry_fees
-            .entry(token)
-            .or_default()
-            .remove(index);
+
+        self.entry_fees.entry(token).or_default().remove(index);
     }
 }
 
 impl Contract {
-    pub (crate) fn internal_lottery_config(&self) -> LotteryConfig {
+    pub(crate) fn internal_lottery_config(&self) -> LotteryConfig {
         self.lotteries_config.get().unwrap()
     }
 
-    pub (crate) fn assert_required_num_participants(&self, num: u32, lottery_type: LotteryType) {
+    pub(crate) fn assert_required_num_participants(&self, num: u32, lottery_type: LotteryType) {
         let required_num_participants = match lottery_type {
-            LotteryType::SimpleLottery => {
-                self
-                    .internal_lottery_config()
-                    .num_participants
-            },
+            LotteryType::SimpleLottery => self.internal_lottery_config().num_participants,
             // LotteryType::BigLottery => {
             //     self
             //         .internal_lottery_config()
@@ -143,15 +138,18 @@ impl Contract {
         );
     }
 
-    pub (crate) fn assert_required_entry_fees(&self, token_id: &AccountId, amount: Balance, lottery_type: LotteryType) {
+    pub(crate) fn assert_required_entry_fees(
+        &self,
+        token_id: &AccountId,
+        amount: Balance,
+        lottery_type: LotteryType,
+    ) {
         let lottery_config = self.internal_lottery_config();
         let required_entry_fees = match lottery_type {
-            LotteryType::SimpleLottery => {
-                lottery_config
-                    .entry_fees
-                    .get(token_id)
-                    .expect("No required fees for token")
-            },
+            LotteryType::SimpleLottery => lottery_config
+                .entry_fees
+                .get(token_id)
+                .expect("No required fees for token"),
             // LotteryType::BigLottery => {
             //     lottery_config
             //         .entry_fees
@@ -169,15 +167,11 @@ impl Contract {
 
 #[near_bindgen]
 impl Contract {
-        /// Added the lottery config new num_participants required.
+    /// Added the lottery config new num_participants required.
     /// - Requires one yoctoNEAR.
     /// - Requires to be called by the contract owner.
     #[payable]
-    pub fn add_num_participants(
-        &mut self, 
-        num: u32,
-        lottery_type: String
-    ) {
+    pub fn add_num_participants(&mut self, num: u32, lottery_type: String) {
         assert_one_yocto();
         self.assert_owner();
 
@@ -185,8 +179,8 @@ impl Contract {
 
         if lottery_type == *SIMPLE_LOTTERY {
             config.add_num_participants(num);
-        // } else if lottery_type == *BIG_LOTTERY {
-        //     config.add_big_lottery_num_participants(num);
+            // } else if lottery_type == *BIG_LOTTERY {
+            //     config.add_big_lottery_num_participants(num);
         }
 
         config.assert_valid();
@@ -196,11 +190,7 @@ impl Contract {
     /// - Requires one yoctoNEAR.
     /// - Requires to be called by the contract owner.
     #[payable]
-    pub fn remove_num_participants (      
-        &mut self, 
-        num: u32,
-        lottery_type: String
-    ) {
+    pub fn remove_num_participants(&mut self, num: u32, lottery_type: String) {
         assert_one_yocto();
         self.assert_owner();
 
@@ -211,12 +201,12 @@ impl Contract {
         match lottery_type {
             LotteryType::SimpleLottery => {
                 config.remove_num_participants(num);
-            },
+            }
             // LotteryType::BigLottery => {
             //     config.remove_big_lottery_num_participants(num);
             // },
         }
-        
+
         config.assert_valid();
         self.lotteries_config.set(&config);
     }

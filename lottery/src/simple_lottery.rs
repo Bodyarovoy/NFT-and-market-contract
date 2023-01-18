@@ -16,7 +16,7 @@ pub struct SimpleLottery {
     /// Required total amount for lottery to start
     pub required_pool: Balance,
     pub winner: Option<AccountId>,
-    pub refferal_transfered: Balance
+    pub refferal_transfered: Balance,
 }
 
 impl SimpleLottery {
@@ -24,11 +24,13 @@ impl SimpleLottery {
         id: LotteryId,
         lottery_token_id: AccountId,
         num_participants: u32,
-        entry_fee: Balance 
+        entry_fee: Balance,
     ) -> Self {
-        let required_pool:Balance = match entry_fee.checked_mul(num_participants as u128) {
+        let required_pool: Balance = match entry_fee.checked_mul(num_participants as u128) {
             Some(amount) => amount,
-            None => panic!("Incorrect lottery setup, math overflow through  `entry_fee * num_participants`"),
+            None => panic!(
+                "Incorrect lottery setup, math overflow through  `entry_fee * num_participants`"
+            ),
         };
         let lottery = Self {
             id,
@@ -39,7 +41,7 @@ impl SimpleLottery {
             current_pool: 0,
             required_pool,
             winner: None,
-            refferal_transfered: 0
+            refferal_transfered: 0,
         };
         lottery.assert_valid();
         lottery
@@ -49,7 +51,7 @@ impl SimpleLottery {
         assert!(self.entry_fee > 0, "entry_fee cannot be zero");
         assert!(self.required_pool > 0, "num_participants cannot be zero");
     }
-    
+
     fn get_accounts_num(&self) -> u32 {
         self.entries.len() as _
     }
@@ -71,7 +73,9 @@ impl SimpleLottery {
     }
 
     fn is_finished(&self) -> bool {
-        self.lottery_status == LotteryStatus::Finished && self.is_pools_equal() && self.winner.is_some()
+        self.lottery_status == LotteryStatus::Finished
+            && self.is_pools_equal()
+            && self.winner.is_some()
     }
 
     pub fn assert_is_finished(&self) {
@@ -112,7 +116,7 @@ impl SimpleLottery {
         let total_entries = self.get_accounts_num();
         let index = get_range_random_number(0, total_entries);
         let winner = &self.entries[index];
-       
+
         self.winner = Some(winner.clone());
     }
 
@@ -123,4 +127,3 @@ impl SimpleLottery {
         }
     }
 }
-  

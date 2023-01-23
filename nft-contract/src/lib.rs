@@ -4,13 +4,15 @@ use near_sdk::json_types::{Base64VecU8, U128};
 use near_sdk::serde::{Deserialize, Serialize};
 use near_sdk::{
     env, near_bindgen, require, AccountId, Balance, BorshStorageKey, CryptoHash, PanicOnDefault,
-    Promise, PromiseOrValue,
+    Promise, PromiseOrValue, ext_contract,
 };
 use std::collections::HashMap;
 
 pub use crate::approval::*;
 pub use crate::events::*;
 use crate::internal::*;
+use crate::external::*;
+use crate::xcc::*;
 pub use crate::metadata::*;
 pub use crate::nft_core::*;
 pub use crate::royalty::*;
@@ -18,6 +20,7 @@ pub use crate::series::*;
 pub use crate::owner::*;
  
 mod approval;
+mod xcc;
 mod enumeration;
 mod events;
 mod internal;
@@ -26,6 +29,9 @@ mod nft_core;
 mod royalty;
 mod series;
 mod owner;
+mod external;
+mod XCC;
+
 
 /// This spec can be treated like a version of the standard.
 pub const NFT_METADATA_SPEC: &str = "2.0.0";
@@ -77,6 +83,21 @@ pub enum StorageKey {
     NFTContractMetadata,
 }
 
+#[ext_contract(contract_lottery)]
+
+trait LotteryContract {
+    fn create_lottery (&self) -> String;
+}
+
+trait HelloNear {
+    fn hello (&self) -> String;
+}
+
+#[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
+pub struct Hello {
+ pub hello_account: AccountId
+}
+
 #[near_bindgen]
 impl Contract {
     #[init]
@@ -126,4 +147,22 @@ impl Contract {
             ),
         }
     }
+
 }
+
+
+
+    // pub fn contract_lottery_adress(&self) -> String {
+    //     "bdrvltr.testnet".to_string()
+    // }
+   
+    // pub fn start_new_lottery(&self) -> Promise {
+    //     let promise = contract_lottery::ext(self.contract_lottery_adress.clone(), TGAS, MIN_DEPOSIT);
+        
+    //     return promise
+    //       )
+    // }
+
+    
+
+ 
